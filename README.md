@@ -195,7 +195,7 @@ Tests use the MCP SDK's in-memory transport on both sides: `Client(proxy) → pr
 
 Related: [toilscan](https://github.com/hishamalward/toilscan) (the same write-safety instinct applied to a developer tool), [agent-slots](https://github.com/hishamalward/agent-slots) (runtime isolation for parallel agents), and agentkeel (the process side: gates and blast radius for agent-written code; in progress).
 
-For whoever owns this next: [docs/how-it-works.html](docs/how-it-works.html) is the tour (the code in call order, the controls, the interview answers); [docs/spec.md](docs/spec.md) is the contract.
+For whoever owns this next: [docs/learning/how-it-works.html](docs/learning/how-it-works.html) is the tour (the code in call order, the controls, the interview answers); [docs/spec.md](docs/spec.md) is the contract.
 
 ## License
 
