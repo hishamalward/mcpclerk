@@ -167,7 +167,7 @@ upstreams:
 
 ## Prior art, and what this is instead
 
-Gateways for MCP exist and do more than this: [Lasso Security's mcp-gateway](https://github.com/lasso-security/mcp-gateway), [IBM's mcp-context-forge](https://github.com/IBM/mcp-context-forge), and [Docker's MCP Gateway](https://github.com/docker/mcp-gateway) bring registries, multi-tenant auth, plugin pipelines and observability. mcpclerk claims no novelty. It claims smallness and verifiability: a single-purpose, readable, local proxy whose whole surface is the five controls above and a log you can check. It is about 900 lines of Python you can read in an afternoon, with one dependency beyond the MCP SDK (a YAML parser).
+Gateways for MCP exist and do more than this: [Lasso Security's mcp-gateway](https://github.com/lasso-security/mcp-gateway), [IBM's mcp-context-forge](https://github.com/IBM/mcp-context-forge), and [Docker's MCP Gateway](https://github.com/docker/mcp-gateway) bring registries, multi-tenant auth, plugin pipelines and observability. mcpclerk claims no novelty. It claims smallness and verifiability: a single-purpose, readable, local proxy whose whole surface is the five controls above and a log you can check. It is about 1,000 lines of Python you can read in an afternoon, with one dependency beyond the MCP SDK (a YAML parser).
 
 ## What it does not do (yet)
 

@@ -18,7 +18,7 @@ What happened in the demo:
 
 Every entry in that log carries the hash of the entry before it. Every refusal is an entry. Results are not stored, only what was called, what was decided, and who said yes.
 
-The enterprise question about agents is not "can it do the job". It is: what is it allowed to do, who approved the dangerous parts, and what did it actually do. This is a small, readable answer to those three, and nothing more. Gateways that do more exist; this one is 900 lines you can read in an afternoon and a log you can check with one command.
+The enterprise question about agents is not "can it do the job". It is: what is it allowed to do, who approved the dangerous parts, and what did it actually do. This is a small, readable answer to those three, and nothing more. Gateways that do more exist; this one is about 1,000 lines you can read in an afternoon and a log you can check with one command.
 
 MIT, Python, the official MCP SDK. Link in the comments.
 

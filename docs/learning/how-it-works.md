@@ -63,7 +63,7 @@ Every path ends at the log. That is the invariant the tests check most often: a 
 
 **Why a proxy and not hooks inside the agent?** Hooks live in the agent's process and are only as trustworthy as the agent's configuration, which the agent can often edit. A proxy is a separate process with its own policy file and its own log, and it works for any MCP client, not one vendor's hook API. The price is one more process and a namespaced tool name.
 
-**How is this different from the gateways that already exist?** Lasso's mcp-gateway, IBM's context-forge and Docker's MCP Gateway are platforms: registries, auth, plugins, observability. mcpclerk is about 900 lines with one dependency beyond the SDK, five controls, and a log you can verify with one command. It claims smallness and verifiability, not novelty.
+**How is this different from the gateways that already exist?** Lasso's mcp-gateway, IBM's context-forge and Docker's MCP Gateway are platforms: registries, auth, plugins, observability. mcpclerk is about 1,000 lines with one dependency beyond the SDK, five controls, and a log you can verify with one command. It claims smallness and verifiability, not novelty.
 
 **What happens when approval times out, and why is that a refusal?** The call is not forwarded, the agent receives `refused-timeout` as a readable error, and the log records it. The proxy cannot tell "no" from "not yet", and the safe reading of silence on a write is no; an agent that wants the call can ask again and a human can answer.
 
