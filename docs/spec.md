@@ -303,10 +303,10 @@ New repository. The proxy writes only under `--log` and `--approvals` (defaults 
 - The demo scenario runs against the real filesystem server and the GIF is recorded from that run.
 - CI green on macOS and Linux (Windows best-effort, stated).
 
-## 15. Decisions that need the owner's word before code
+## 15. Decisions (ruled 2026-08-23: all five approved)
 
-1. **"Delete refused" → `move_file` refused.** The filesystem server has no delete tool. Alternative: write a five-line fake `delete_file` into the fake upstream for the tests (already planned) and say in the README that the real-server demo refuses `move_file`. Proposed: do both.
-2. **Denied tools are hidden from `tools/list`** rather than listed-and-refused (§3). Cost: an agent cannot report "I was denied X" for a tool it never saw; the log still can.
-3. **`tools` subcommand** added beyond the brief's three (§10). Small, read-only, and the reason the demo policy can be written honestly.
-4. **Namespace separator** defaults to `.` as the brief says, with `__` as a policy option (§3).
-5. **Results are not logged** (§8), only their size and type.
+1. **"Delete refused" is `move_file` refused** in the real demo (the filesystem server has no delete tool); the fake test upstream has a literal `delete_file`, so the deny path is proven on a delete as well.
+2. **Denied and unlisted tools are hidden from `tools/list`**; called by name they are still refused and logged.
+3. **`mcpclerk tools` ships** as a read-only fourth subcommand.
+4. **Namespace separator** defaults to `.`; `__` available via `namespace_separator`.
+5. **Results are not logged**; only outcome, size and content types.
