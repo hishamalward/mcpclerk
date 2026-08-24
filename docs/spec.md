@@ -288,7 +288,7 @@ Upstream: `@modelcontextprotocol/server-filesystem` on `./demo-sandbox`, with `e
 5. `mcpclerk verify audit/mcpclerk.jsonl` → `OK`. Then one byte edited with `sed`, `verify` → `FAIL at line 4`.
 6. `mcpclerk report` → the table.
 
-Recorded as a ≤ 30 s GIF (asciinema → agg, or vhs; whichever is installed). The demo log is copied to `examples/audit.demo.jsonl` and is safe by construction: the redaction tests are what prove it.
+Recorded as a ≤ 30 s GIF with `vhs` (installed locally); the `examples/demo.tape` script is committed so the recording is reproducible. The demo log is copied to `examples/audit.demo.jsonl` and is safe by construction: the redaction tests are what prove it.
 
 A second, shorter demo wraps the `evalmine` MCP server (`run_suite` → `approve` because it spends money; `compare` / `last_report` → `allow`) if time allows; it is the second sentence of §1 made concrete with a server the owner wrote.
 
