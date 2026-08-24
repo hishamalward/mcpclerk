@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+
+# Runtime state the proxy writes (never commit real logs; examples/ is curated by hand)
+audit/
+approvals/
+
+# macOS / editors
+.DS_Store
+.idea/
+.vscode/
