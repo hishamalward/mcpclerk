@@ -1,4 +1,4 @@
-"""mcpclerk serve | tools | verify | report"""
+"""mcpclerk serve | approve | tools | verify | report"""
 from __future__ import annotations
 
 import argparse
@@ -75,6 +75,12 @@ def _tools(a: argparse.Namespace) -> int:
     return 0
 
 
+def _approve(a: argparse.Namespace) -> int:
+    from mcpclerk.approval import approve_loop
+    approve_loop(a.approvals, once=a.once, wait_s=a.wait)
+    return 0
+
+
 def _verify(a: argparse.Namespace) -> int:
     from mcpclerk.audit import verify
     r = verify(a.log)
@@ -106,6 +112,12 @@ def build_parser() -> argparse.ArgumentParser:
     t.add_argument("--policy", required=True)
     t.add_argument("--json", action="store_true")
     t.set_defaults(fn=_tools)
+
+    ap = sub.add_parser("approve", help="answer pending approvals from a second terminal (the proxy itself usually has no terminal)")
+    ap.add_argument("--approvals", default=DEFAULT_APPROVALS)
+    ap.add_argument("--once", action="store_true", help="answer one request and exit")
+    ap.add_argument("--wait", type=float, default=60.0, help="seconds to wait for a request to appear")
+    ap.set_defaults(fn=_approve)
 
     v = sub.add_parser("verify", help="check the audit log's hash chain")
     v.add_argument("log")

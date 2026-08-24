@@ -159,7 +159,9 @@ Quota counters are incremented at stage 4 only when the call proceeds past it, s
 
 ## 6. Approval
 
-Two mechanisms run concurrently for each held call; the first answer wins.
+Three mechanisms, all built on one file queue; the first answer wins.
+
+**Finding during the build (2026-08-23).** The MCP SDK spawns stdio servers with `start_new_session=True`, so a proxy started by an MCP client has no controlling terminal and cannot open `/dev/tty`. The in-process prompt therefore only works when a human starts the proxy by hand. The file queue is the mechanism; `mcpclerk approve` is a terminal client of it that runs in a second terminal and is what the demo uses.
 
 **Terminal prompt.** Written to and read from `/dev/tty` (never stdout). Shows: id, `u.t`, redacted args pretty-printed (truncated at 2 KB with a note), the seconds remaining. Keys: `y` approve, `n` refuse, anything else re-prompts. If `/dev/tty` cannot be opened (headless, CI, Windows), the prompt is skipped and the run logs `approval-tty: unavailable` once at start.
 
@@ -242,6 +244,7 @@ Call entry:
 
 ```
 mcpclerk serve  --policy policy.yaml [--log PATH] [--approvals DIR] [--approve-session] [--no-tty]
+mcpclerk approve [--approvals DIR] [--once] [--wait S]   # answer pending approvals from another terminal
 mcpclerk tools  --policy policy.yaml            # connect to upstreams, list every tool with its annotations and the decision the policy gives it; helps write the policy
 mcpclerk verify PATH                            # exit 0 = chain intact
 mcpclerk report PATH [--json]                   # per-tool calls, decisions, refusals, approvals (by whom), p50/p95 latency, held time

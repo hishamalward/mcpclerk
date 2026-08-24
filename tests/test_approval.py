@@ -73,3 +73,35 @@ async def test_terminal_prompt_wins(tmp_path):
     finally:
         tty.close()
         os.close(master)
+
+
+async def test_approve_command_answers_the_queue(tmp_path):
+    """The proxy holds a call; `mcpclerk approve` in another process answers it."""
+    import io
+    import threading
+    from mcpclerk.approval import approve_loop, list_pending
+
+    assert list_pending(tmp_path) == []
+    out = io.StringIO()
+    result = {}
+
+    def human():  # a second terminal
+        result["n"] = approve_loop(tmp_path, once=True, wait_s=5.0, stdin=io.StringIO("what\ny\n"), stdout=out)
+
+    t = threading.Thread(target=human)
+    t.start()
+    outcome = await request_approval(_req(), tmp_path, tty=None)
+    t.join(5)
+    assert (outcome.decision, outcome.by) == ("approved", "file")
+    assert result["n"] == 1
+    text = out.getvalue()
+    assert "approval needed: fake.write_thing" in text and "[REDACTED:kv-secret]" in text and "please answer y or n" in text
+
+
+def test_list_pending_skips_answered_and_expired(tmp_path):
+    from mcpclerk.approval import list_pending
+    (tmp_path / "a.json").write_text(json.dumps({"id": "a", "approved": None, "expires_at": "2999-01-01T00:00:00Z"}))
+    (tmp_path / "b.json").write_text(json.dumps({"id": "b", "approved": True, "expires_at": "2999-01-01T00:00:00Z"}))
+    (tmp_path / "c.json").write_text(json.dumps({"id": "c", "approved": None, "expires_at": "2000-01-01T00:00:00Z"}))
+    (tmp_path / "d.json").write_text("not json")
+    assert [r["id"] for r in list_pending(tmp_path)] == ["a"]

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fs-governed": {
+      "command": "mcpclerk",
+      "args": ["serve", "--policy", "examples/policy.filesystem.yaml", "--log", "audit/mcpclerk.jsonl", "--approvals", "approvals"]
+    }
+  }
+}

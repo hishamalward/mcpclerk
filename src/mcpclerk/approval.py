@@ -179,3 +179,77 @@ def say(msg: str, tty: "Tty | None") -> None:
     out = tty if tty is not None else sys.stderr
     out.write(msg.rstrip("\n") + "\n")
     out.flush()
+
+
+# ---- the file queue as seen by a second terminal: `mcpclerk approve` --------------------------
+
+def list_pending(approvals_dir: str | os.PathLike[str]) -> list[dict[str, Any]]:
+    """Requests nobody has answered yet and that have not expired, oldest first."""
+    d = Path(approvals_dir)
+    if not d.exists():
+        return []
+    now = datetime.now(timezone.utc)
+    out: list[dict[str, Any]] = []
+    for f in sorted(d.glob("*.json")):
+        try:
+            rec = json.loads(f.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(rec, dict) or rec.get("approved") is not None:
+            continue
+        try:
+            expires = datetime.fromisoformat(str(rec.get("expires_at", "")).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if expires <= now:
+            continue
+        rec["_path"] = str(f)
+        out.append(rec)
+    return out
+
+
+def answer(path: str | os.PathLike[str], approved: bool, note: str = "") -> None:
+    """Write the human's answer into a pending request file (the proxy picks it up within 250 ms)."""
+    f = Path(path)
+    rec = json.loads(f.read_text(encoding="utf-8"))
+    rec["approved"] = approved
+    if note:
+        rec["note"] = note
+    f.write_text(json.dumps(rec, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def approve_loop(approvals_dir: str | os.PathLike[str], *, once: bool, wait_s: float,
+                 stdin: TextIO = sys.stdin, stdout: TextIO = sys.stderr) -> int:
+    """Prompt for every pending request. Returns the number answered. Blocking; not async on purpose,
+    it is a human-facing loop in its own process."""
+    answered = 0
+    deadline = time.monotonic() + wait_s
+    while True:
+        pending = list_pending(approvals_dir)
+        if not pending:
+            if once and answered:
+                return answered
+            if time.monotonic() >= deadline:
+                stdout.write(f"[mcpclerk] no pending approvals in {approvals_dir}\n")
+                return answered
+            time.sleep(POLL_S)
+            continue
+        for rec in pending:
+            body = json.dumps(rec.get("args_redacted"), indent=2, ensure_ascii=False)
+            if len(body) > MAX_PROMPT_CHARS:
+                body = body[:MAX_PROMPT_CHARS] + "\n..."
+            stdout.write(f"\n[mcpclerk] approval needed: {rec.get('upstream')}.{rec.get('tool')}  (id {rec.get('id')}, expires {rec.get('expires_at')})\n{body}\napprove? [y/n] ")
+            stdout.flush()
+            line = stdin.readline()
+            if not line:
+                return answered
+            ans = line.strip().lower()
+            if ans not in ("y", "yes", "n", "no"):
+                stdout.write("please answer y or n\n")
+                continue
+            answer(rec["_path"], ans in ("y", "yes"))
+            stdout.write(f"[mcpclerk] {rec.get('id')}: {'approved' if ans in ('y', 'yes') else 'refused'}\n")
+            answered += 1
+            if once:
+                return answered
+        deadline = time.monotonic() + wait_s

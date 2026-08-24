@@ -1,0 +1,33 @@
+name: ci
+on:
+  push:
+    branches: [main, "build/**"]
+  pull_request:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m pytest -q
+      - run: mcpclerk verify examples/audit.demo.jsonl
+
+  windows-best-effort:
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m pytest -q

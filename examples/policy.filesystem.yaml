@@ -1,0 +1,27 @@
+# mcpclerk policy for the official filesystem MCP server, as used in the demo.
+# Read tools pass through, write tools wait for a human, move (the server's destructive op) is denied.
+version: 1
+
+defaults:
+  unlisted: deny              # a tool not named here is an unreviewed tool
+  approval_timeout_s: 120     # a call nobody answers in time is refused, and logged as such
+
+upstreams:
+  fs:
+    transport: stdio
+    command: npx
+    args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp/mcpclerk-demo-sandbox"]
+    tools:
+      "read_*": allow                      # read_file, read_text_file, read_multiple_files, read_media_file
+      list_directory: allow
+      list_directory_with_sizes: allow
+      directory_tree: allow
+      get_file_info: allow
+      list_allowed_directories: allow
+      search_files:
+        decision: allow
+        quota: { per_minute: 3 }           # low on purpose so the demo can show a refusal
+      write_file: approve
+      edit_file: approve
+      create_directory: approve
+      move_file: deny                      # the filesystem server has no delete; move is its destructive op
