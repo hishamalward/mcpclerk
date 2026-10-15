@@ -138,3 +138,18 @@ def test_each_shipped_operation_belongs_to_only_one_class():
         entry = DEFAULT[service]
         buckets = [set(entry.get(key, [])) for key in CLASS_KEYS]
         assert all(not (a & b) for i, a in enumerate(buckets) for b in buckets[i + 1:]), service
+
+
+def test_claude_connection_origin_is_separate_from_worktree_policy(tmp_path):
+    origin, tree, home = (tmp_path / name for name in ("origin", "tree", "home"))
+    for folder in (origin, tree, home):
+        folder.mkdir()
+    (tree / "mcpclerk.json").write_text(json.dumps({"mcp": {"posthog": {"targets": ["111"]}}}))
+    (home / ".claude.json").write_text(json.dumps({"projects": {
+        str(folder): {"mcpServers": {"posthog": {"url": "https://mcp.posthog.com/mcp?project_id=" + pin}}}
+        for folder, pin in ((origin, "111"), (tree, "222"))
+    }}))
+    result = judge(payload("mcp__posthog__exec", {"command": 'call create-feature-flag {}'},
+                           ["remote-write"], str(tree)),
+                   {"CLAUDE_CONFIG_DIR": str(home), "CLAUDE_PROJECT_DIR": str(origin)})
+    assert result["allowed"]

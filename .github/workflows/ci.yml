@@ -14,6 +14,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require current main in PR head
+        if: github.event_name == 'pull_request'
+        run: git merge-base --is-ancestor origin/main HEAD
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python }}

@@ -221,6 +221,6 @@ def pinned_project(server: str, host: str, environ: dict[str, str] = os.environ,
     """Return the pinned project, or None if absent, ambiguous, or malformed."""
     if host == "codex":
         return _codex_pin(server, environ, project_dir)
-    if project_dir:
+    if project_dir and not environ.get("CLAUDE_PROJECT_DIR"):
         environ = {**environ, "CLAUDE_PROJECT_DIR": project_dir}
     return _claude_pin(server, environ)
