@@ -4,14 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mcpclerk"
-version = "0.1.0"
-description = "A governance proxy for MCP servers: per-tool allowlist, human approval for write-class tools, quotas, secret redaction, and a hash-chained audit log."
+version = "0.2.0"
+description = "A local MCP server catalog and native client configuration manager."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [{ name = "Hisham Al-Ward" }]
-dependencies = ["mcp>=2.0,<3", "pyyaml>=6"]
-keywords = ["mcp", "model-context-protocol", "ai-agents", "guardrails", "audit-log", "human-in-the-loop", "security"]
+dependencies = ["tomlkit>=0.13,<1"]
+keywords = ["mcp", "model-context-protocol", "server-catalog", "configuration"]
 classifiers = [
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3",
@@ -20,13 +20,16 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "anyio>=4"]
+dev = ["pytest>=8"]
 
 [project.scripts]
 mcpclerk = "mcpclerk.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+mcpclerk = ["mcp_catalog.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

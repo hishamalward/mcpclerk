@@ -1,9 +1,4 @@
-"""Redaction of secret-looking values, for the log and the human prompt only.
-
-Pure functions. The upstream never sees the output of this module; the proxy forwards the
-original arguments untouched. Replacement text names the rule so the log shows that something
-was hidden and which rule hid it.
-"""
+"""Redact credential-like values before showing MCP configuration diagnostics."""
 from __future__ import annotations
 
 import re
