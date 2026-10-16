@@ -6,11 +6,20 @@ MCPClerk reads and edits native MCP configuration for Claude Code and Codex. `li
 
 ```sh
 mcpclerk list [--host claude|codex] [--project PATH]
-mcpclerk add NAME --host claude|codex --scope user|project|local --file server.json [--project PATH]
-mcpclerk remove NAME --host claude|codex --scope user|project|local [--project PATH]
-mcpclerk enable NAME --host claude|codex --scope user|project|local [--project PATH] [--plugin CODEX_PLUGIN_ID]
-mcpclerk disable NAME --host claude|codex --scope user|project|local [--project PATH] [--plugin CODEX_PLUGIN_ID]
+mcpclerk add NAME --host claude|codex --scope SCOPE --file server.json [--project PATH]
+mcpclerk remove NAME --host claude|codex --scope SCOPE [--project PATH]
+mcpclerk enable NAME --host claude|codex --scope SCOPE [--project PATH] [--plugin CODEX_PLUGIN_ID]
+mcpclerk disable NAME --host claude|codex --scope SCOPE [--project PATH] [--plugin CODEX_PLUGIN_ID]
 ```
+
+Choose `SCOPE` for the host and command:
+
+| Host | `add`, `remove`, `tool` | `enable`, `disable` |
+| --- | --- | --- |
+| Claude Code | `user`, `project`, `local` | `project` |
+| Codex | `user`, `project` | `user`, `project` |
+
+`local` is Claude-only; Codex rejects it. The `tool` command below uses the same scope table.
 
 `server.json` contains one native server object with exactly one nonempty `command` or HTTP(S) `url`. The `project` and `local` scopes require an existing absolute `--project` directory. Claude `enable`/`disable` requires `project` scope and updates that project's enable/disable settings; approval of project `.mcp.json` entries remains a separate Claude Code setting. Claude `local` scope writes project-keyed server entries to the Claude registry or tool rules to `.claude/settings.local.json`, depending on the command. It does not edit installed plugin manifests. Codex plugin server definitions remain plugin-owned; `--plugin` selects a Codex plugin's enablement or tool policy. These commands change configuration files, not live server processes.
 
@@ -18,7 +27,7 @@ mcpclerk disable NAME --host claude|codex --scope user|project|local [--project 
 
 ```sh
 mcpclerk tool NAME TOOL --mode allow|ask|deny|clear --host claude|codex \
-  --scope user|project|local [--project PATH] [--plugin CODEX_PLUGIN_ID]
+  --scope SCOPE [--project PATH] [--plugin CODEX_PLUGIN_ID]
 mcpclerk catalog --scope user|project --file catalog.json [--project PATH]
 mcpclerk migrate-keel --scope user|project --file old-policy.json [--project PATH]
 ```
