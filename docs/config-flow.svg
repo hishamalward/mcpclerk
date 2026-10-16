@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 680" role="img" aria-labelledby="title desc">
+  <title id="title">How MCPClerk manages configuration</title>
+  <desc id="desc">MCPClerk edits native Claude Code and Codex configuration and keeps reversible backups. The hosts load configuration and run MCP servers directly. For a task MCP call, a Keel hook asks MCPClerk to judge the call using the catalog and declared permissions; the host continues to carry the tool traffic.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0L10 5L0 10Z" fill="#197f80"/>
+    </marker>
+    <marker id="arrow-ink" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0L10 5L0 10Z" fill="#293b3f"/>
+    </marker>
+    <style>
+      text { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+      .title { fill: #173438; font-size: 30px; font-weight: 700; letter-spacing: -0.6px; }
+      .subtitle { fill: #52686a; font-size: 15px; }
+      .section { fill: #536a6b; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; }
+      .card-title { fill: #173438; font-size: 16px; font-weight: 700; }
+      .body { fill: #52686a; font-size: 12.5px; }
+      .small { fill: #617577; font-size: 11px; }
+      .pill { fill: #ffffff; font-size: 10px; font-weight: 700; letter-spacing: .7px; }
+      .line { fill: none; stroke: #197f80; stroke-width: 2.2; marker-end: url(#arrow); }
+      .runtime { fill: none; stroke: #293b3f; stroke-width: 2.2; marker-end: url(#arrow-ink); }
+      .dashed { fill: none; stroke: #779293; stroke-width: 1.7; stroke-dasharray: 5 5; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect width="1120" height="680" rx="22" fill="#f5f1e7"/>
+  <text x="44" y="54" class="title">MCPClerk manages configuration</text>
+  <text x="44" y="80" class="subtitle">Claude Code and Codex keep control of their own MCP runtime.</text>
+
+  <rect x="40" y="108" width="1040" height="270" rx="18" fill="#e8eee7" stroke="#d3ded5"/>
+  <text x="64" y="137" class="section">CONFIGURATION · LOCAL FILES</text>
+
+  <rect x="64" y="158" width="235" height="142" rx="14" fill="#fffdf8" stroke="#d5ddd4"/>
+  <rect x="82" y="176" width="66" height="22" rx="11" fill="#197f80"/>
+  <text x="95" y="191" class="pill">CLI</text>
+  <text x="82" y="226" class="card-title">MCPClerk</text>
+  <text x="82" y="249" class="body">list · add · remove</text>
+  <text x="82" y="269" class="body">enable · tool · undo</text>
+  <text x="82" y="288" class="small">No server launch for inventory</text>
+
+  <path d="M299 230H354" class="line"/>
+  <text x="315" y="214" class="small">edits</text>
+
+  <rect x="364" y="158" width="272" height="142" rx="14" fill="#fffdf8" stroke="#d5ddd4"/>
+  <rect x="382" y="176" width="94" height="22" rx="11" fill="#477ba0"/>
+  <text x="394" y="191" class="pill">NATIVE</text>
+  <text x="382" y="226" class="card-title">Host configuration</text>
+  <text x="382" y="249" class="body">Claude Code · JSON settings</text>
+  <text x="382" y="269" class="body">Codex · TOML config</text>
+  <text x="382" y="288" class="small">Server entries and tool policy</text>
+
+  <path d="M636 214H691" class="line"/>
+  <text x="650" y="198" class="small">loads</text>
+
+  <rect x="701" y="158" width="339" height="142" rx="14" fill="#fffdf8" stroke="#d5ddd4"/>
+  <rect x="719" y="176" width="90" height="22" rx="11" fill="#b2763e"/>
+  <text x="731" y="191" class="pill">RUNTIME</text>
+  <text x="719" y="226" class="card-title">Claude Code or Codex</text>
+  <text x="719" y="249" class="body">Loads its configuration, applies host</text>
+  <text x="719" y="269" class="body">trust and approval, and runs MCP servers.</text>
+  <text x="719" y="288" class="small">MCP traffic stays on the host path.</text>
+
+  <path d="M180 300V331H472" class="dashed"/>
+  <rect x="478" y="316" width="253" height="42" rx="12" fill="#d9e8e2" stroke="#b8d2c9"/>
+  <text x="497" y="342" class="body" style="font-weight:700">Private backup · compare-and-undo</text>
+  <text x="744" y="342" class="small">restores only if the edited file is unchanged</text>
+
+  <rect x="40" y="398" width="1040" height="244" rx="18" fill="#eaf0f2" stroke="#d2dfe0"/>
+  <text x="64" y="427" class="section">TASK-SCOPED POLICY · DECISION PATH</text>
+
+  <rect x="64" y="452" width="236" height="82" rx="13" fill="#fffdf8" stroke="#d5ddd4"/>
+  <text x="82" y="479" class="card-title">Keel MCP hook</text>
+  <text x="82" y="502" class="body">Calls judge for an MCP tool event</text>
+  <text x="82" y="521" class="small">Passes tool, args, host, task permissions</text>
+
+  <path d="M300 493H348" class="line"/>
+
+  <rect x="360" y="452" width="246" height="82" rx="13" fill="#fffdf8" stroke="#d5ddd4"/>
+  <text x="378" y="479" class="card-title">mcpclerk judge</text>
+  <text x="378" y="502" class="body">Returns allow/deny + classification</text>
+  <text x="378" y="521" class="small">Does not proxy or forward the call</text>
+
+  <path d="M606 493H742" class="line"/>
+
+  <rect x="754" y="452" width="286" height="82" rx="13" fill="#173438"/>
+  <text x="775" y="484" fill="#fffdf8" font-size="16" font-weight="700">Decision</text>
+  <text x="775" y="508" fill="#d6e4de" font-size="12">reason + classification</text>
+
+  <rect x="360" y="552" width="380" height="62" rx="12" fill="#d9e8e2" stroke="#b8d2c9"/>
+  <text x="378" y="578" class="card-title" style="font-size:14px">Catalog layers</text>
+  <text x="378" y="599" class="small">Shipped + user + project risk classes and target policy</text>
+  <path d="M550 552V540" class="dashed"/>
+
+  <text x="64" y="668" class="small">MCPClerk reports configured state; live availability and host approval remain runtime decisions.</text>
+</svg>

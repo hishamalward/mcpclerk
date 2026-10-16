@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mcpclerk"
 version = "0.2.0"
-description = "A local MCP server catalog and native client configuration manager."
+description = "Manage MCP configuration for Claude Code and Codex."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"

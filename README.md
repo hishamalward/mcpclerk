@@ -4,11 +4,11 @@
 ![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
 ![MIT](https://img.shields.io/badge/license-MIT-green)
 
-MCPClerk catalogs MCP operations and manages Claude Code and Codex server configuration in their native files. It can inspect configured sources, add or remove a server, change host enablement, maintain local MCP risk policy, and evaluate an operation against task permissions and target policy.
+**Manage MCP configuration for Claude Code and Codex.** MCPClerk is a local CLI for inspecting configured servers, editing native host settings, keeping an operation catalog, and checking task-scoped MCP calls.
 
-MCPClerk is a local configuration tool. It does not run an MCP proxy, launch servers to inspect them, or provide an approval, quota, or audit service. A listed configuration entry is not proof that a host has connected to or enabled that server.
+MCPClerk edits configuration; Claude Code and Codex still run MCP servers and own runtime approval and trust. It does not proxy tool traffic or launch servers during inventory. A listed entry is configured state, not proof of a live connection.
 
-**The 0.2.0 candidate is a breaking change from 0.1.0.** The proxy commands and YAML proxy policy format have been removed; there is no automatic conversion. `migrate-keel` is an explicit, reversible copy of MCP catalog policy only.
+![MCPClerk manages native host configuration and evaluates task policy without sitting in the MCP traffic path.](docs/config-flow.svg)
 
 ## Install
 
@@ -30,17 +30,23 @@ mcpclerk list
 mcpclerk list --host codex --project /path/to/project
 ```
 
-Add one native server object from a JSON file to the selected host scope:
+To add a server, put its native definition in a JSON file and choose a host and scope. For example, `server.json` can contain a stdio definition:
 
-```sh
-mcpclerk add analytics --host codex --scope user --file server.json
+```json
+{"command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/path/to/project"]}
 ```
 
-Use `mcpclerk tool NAME TOOL --mode allow|ask|deny|clear` to set the host's per-tool policy, and `mcpclerk judge` to evaluate a versioned JSON request from standard input. See the [command guide](docs/commands.md) for host scopes, catalog files, Keel migration, and undo.
+Then add it to a user configuration:
 
-Server, tool, catalog and migration changes print a private backup transaction ID and an update note. Keep the ID if you may need to undo the write. MCPClerk preserves native config formatting where supported, and `undo TRANSACTION` restores a prior file only while it still matches the version MCPClerk wrote.
+```sh
+mcpclerk add files --host claude --scope user --file server.json
+```
 
-Claude Code and Codex remain the runtime authorities for their native configuration and project trust. MCPClerk can report configured enablement and provenance, but it cannot establish effective availability: managed settings, project trust, session flags, and live connections remain host runtime decisions.
+The command reports an undo transaction ID. Use `mcpclerk undo ID` to restore the previous file if it has not changed since. See the [command guide](docs/commands.md) for project scopes, per-tool settings, catalog policy, and task judging.
+
+Catalog policy is separate from host approval. `mcpclerk judge` reads one JSON request from standard input and returns a classification and decision without echoing its arguments. Keel calls it for MCP tool events; the decision uses declared task permissions and project target policy.
+
+Claude Code and Codex remain the runtime authorities for native configuration and project trust. Managed settings, project trust, session flags, and live connections can change effective availability beyond what a local file inventory can establish.
 
 ## License
 

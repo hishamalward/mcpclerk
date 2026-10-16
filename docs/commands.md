@@ -1,6 +1,21 @@
-# Commands
+# Command guide
 
-MCPClerk reads and edits native MCP configuration for Claude Code and Codex. `list` does not start servers. It reports configured enablement and provenance, not effective host availability, project trust, managed policy, session flags, or live connections.
+MCPClerk manages native MCP configuration for Claude Code and Codex. `list` does not start servers. Inventory reports configured enablement and provenance, not effective host availability, project trust, managed policy, session flags, or live connections.
+
+## Quick start
+
+Inspect configured servers without exposing their command arguments, URLs, environment values, or headers:
+
+```sh
+mcpclerk list --host codex
+```
+
+Add a server from a JSON file, then keep the transaction ID in case you want to undo the edit:
+
+```sh
+mcpclerk add docs --host codex --scope user --file server.json
+mcpclerk undo TRANSACTION_ID
+```
 
 ## Inspect and manage servers
 
@@ -34,7 +49,14 @@ mcpclerk migrate-keel --scope user|project --file old-policy.json [--project PAT
 
 `tool` records native host allow/ask/deny settings; the host decides how those settings take effect. `catalog` replaces the selected MCPClerk user catalog or project `mcpclerk.json` layer, which the judge reads to classify operations and check targets. The two policies are separate. `migrate-keel` copies only MCP catalog policy when explicitly requested; it does not run automatically. Catalog data layers the shipped operation catalog, user catalog and project `mcpclerk.json`; project entries can add risk and narrow targets. Codex project trust is still required, and inherited managed denies or wildcard restrictions may narrow a local allow.
 
-For Keel 0.10.0, migrate the user catalog and each project's `agentkeel.json` explicitly. Review the new catalog files, preserve the originals for rollback, then remove the legacy `mcp` and `guards.mcp_unknown` entries and the old user catalog from Keel's active locations. Keel refuses intercepted MCP calls while those legacy settings remain, so an omitted migration cannot silently weaken policy. MCPClerk does not delete the source files. The unknown-call log and `task.py mcp draft` convenience command are retired; catalog changes now have one explicit entry point.
+If you have an existing Keel MCP catalog in JSON, copy its policy into a new MCPClerk layer explicitly:
+
+```sh
+mcpclerk migrate-keel --scope user --file old-catalog.json
+mcpclerk migrate-keel --scope project --project /path/to/project --file old-project.json
+```
+
+Review the resulting catalog before using it. This copies MCP catalog policy only; it leaves the source files untouched and does not migrate unrelated task or guard settings.
 
 `judge` reads one JSON object from standard input. It checks the tool operation against MCPClerk's catalog, declared task permissions, target policy and, for PostHog, the project pin in the selected host configuration. It does not inspect the live host tool policy or invoke the server:
 
@@ -46,7 +68,7 @@ Read operations are allowed. Unknown operations are blocked. Remote writes, paid
 
 ## Undo a configuration write
 
-Server, tool, catalog and migration changes report a transaction ID for their private backup:
+Server, tool, and catalog changes report a transaction ID for their private backup:
 
 ```sh
 mcpclerk undo TRANSACTION
